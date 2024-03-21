@@ -1,0 +1,324 @@
+basePath: /
+definitions:
+  model.CreatePostRequest:
+    properties:
+      content:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/model.CreateTagResponse'
+        type: array
+      title:
+        maxLength: 100
+        type: string
+    required:
+    - content
+    - title
+    type: object
+  model.CreateTagResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        maxLength: 20
+        type: string
+    required:
+    - name
+    type: object
+  model.LoginUserRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 100
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.RegisterUserRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      password:
+        maxLength: 100
+        type: string
+      username:
+        maxLength: 30
+        minLength: 5
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - username
+    type: object
+  model.UpdateUserRequest:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      password:
+        maxLength: 100
+        type: string
+    type: object
+info:
+  contact:
+    email: adi.wahyudi14@gmail.com
+    name: I Wayan Adi Wahyudi
+  description: '"Type ''Bearer {TOKEN}'' to correctly set the API Key"'
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Adiarium Backend
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: API for auth login.
+      operationId: login-user
+      parameters:
+      - description: Request
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Login to Adiarium
+      tags:
+      - Auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: API for register a new user.
+      operationId: register-user
+      parameters:
+      - description: Request
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Register a new user
+      tags:
+      - Auth
+  /api/post/{slug}:
+    get:
+      consumes:
+      - application/json
+      description: API get post detail by slug.
+      operationId: posts-by-slug
+      parameters:
+      - description: Post Slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get posts by post slug.
+      tags:
+      - Posts
+  /api/posts:
+    get:
+      consumes:
+      - application/json
+      description: API get all posts.
+      operationId: get-posts
+      parameters:
+      - description: Title
+        in: query
+        name: title
+        type: string
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      - collectionFormat: csv
+        description: Tags
+        in: query
+        items:
+          type: string
+        name: tags
+        type: array
+      - default: 1
+        description: Page Number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all posts.
+      tags:
+      - Posts
+    post:
+      consumes:
+      - application/json
+      description: API create a post.
+      operationId: create-post
+      parameters:
+      - description: Request create post
+        in: body
+        name: _
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - Bearer: []
+      summary: Create a post.
+      tags:
+      - Posts
+  /api/posts/{username}:
+    get:
+      consumes:
+      - application/json
+      description: API get all posts by specific user.
+      operationId: get-posts-by-user
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Title
+        in: query
+        name: title
+        type: string
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      - default: 1
+        description: Page Number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all posts by specific user.
+      tags:
+      - Posts
+  /api/users:
+    patch:
+      consumes:
+      - application/json
+      description: API for update user that currently logged in.
+      operationId: update-current-user
+      parameters:
+      - description: Request
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - Bearer: []
+      summary: Update User
+      tags:
+      - Users
+  /api/users/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: API for delete user by ID, restricted for admin only.
+      operationId: delete-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - Bearer: []
+      summary: Delete user by ID.
+      tags:
+      - Users
+  /api/users/admin:
+    post:
+      consumes:
+      - application/json
+      description: API for create a new admin.
+      operationId: register-admin
+      parameters:
+      - description: Request
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - BasicAuth: []
+      summary: Register a new admin
+      tags:
+      - Users
+schemes:
+- http
+- https
+securityDefinitions:
+  BasicAuth:
+    type: basic
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
